@@ -14,6 +14,16 @@ struct Vehicle{
     Vehicle(){};
     ~Vehicle(){};
     
+    float getCost(const std::vector< std::vector<float> >& adjMatrix){
+        float solution = 0;
+        int i = 0;
+        for (auto city : this->route){
+            solution += adjMatrix[i][city];
+            i = city;
+        }
+        solution += adjMatrix[i][0];
+        return  solution;
+    }
     int currLoad = 0;
     std::vector<int> route;
 };

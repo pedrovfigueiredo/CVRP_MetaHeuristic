@@ -16,7 +16,7 @@ CVRP::CVRP(const std::string& filePath){
     // Building adjMatrix
     this->buildAdjMatrix(nodes);
     
-    this->solution_ = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_);
+    this->solution_ = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::Total);
     std::cout << "Custo: " << solution_->getCost() << std::endl;
     this->solution_->printRoutes();
     
