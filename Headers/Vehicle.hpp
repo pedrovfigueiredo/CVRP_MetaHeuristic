@@ -24,7 +24,14 @@ struct Vehicle{
         solution += adjMatrix[i][0];
         return  solution;
     }
-    int currLoad = 0;
+    
+    int getCurrLoad(const std::vector<int>& demands){
+        int result = 0;
+        for(auto client: this->route)
+            result += demands[client];
+        return result;
+    }
+    
     std::vector<int> route;
 };
 

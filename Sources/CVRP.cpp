@@ -10,19 +10,70 @@
 
 CVRP::CVRP(const std::string& filePath){
     std::vector<Node*> nodes;
+    Solution* s;
+    
     //Building nodes vector
     this->buildNodes(filePath, nodes);
     
     // Building adjMatrix
     this->buildAdjMatrix(nodes);
     
-    this->solution_ = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::Total);
-    std::cout << "Custo: " << solution_->getCost() << std::endl;
-    this->solution_->printRoutes();
+    s = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::Total);
+    
+    std::cout << "Custo: " << s->getCost() << std::endl;
+    s->printRoutes();
+    
+    s = VND(s);
+    
+    std::cout << "Custo: " << s->getCost() << std::endl;
+    s->printRoutes();
     
 }
 
 CVRP::~CVRP(){}
+/*
+Solution* CVRP::VNS(Solution* s, std::size_t executionCount){
+    unsigned k;
+    while (executionCount--) {
+        k = 1;
+        while (k <= 10) {
+            switch (k) {
+                case 1:
+                    <#statements#>
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+    }
+    
+    
+    return bestSolution_;
+}
+*/
+Solution* CVRP::VND(Solution* solution){
+    Solution* newSolution = solution;
+    int k = 1;
+    while (k <= 2) {
+        switch (k) {
+            case 1:
+                newSolution->descida1opt();
+                break;
+            case 2:
+                newSolution->descida2opt();
+                break;
+        }
+        
+        if (newSolution->getCost() < solution->getCost()) {
+            delete solution;
+            solution = newSolution;
+            k = 1;
+        }else
+            k += 1;
+    }
+    return solution;
+}
 
 void CVRP::buildAdjMatrix(const std::vector<Node*>& nodes){
     int n = (int) nodes.size();

@@ -21,23 +21,31 @@ public:
     };
     
     Solution(const std::vector< std::vector<float> >& adjMatrix, const std::vector<int>& demands, const unsigned nVehicles, const unsigned capacity, RelaxationLevel level);
+    Solution(const Solution* s1);
     ~Solution();
+    
+    void descida1opt();
+    void descida2opt();
     
     int getCost();
     void printRoutes();
 private:
     void generateFirstSolution(RelaxationLevel level);
     
+    
     // Neighborhood Moviments
-    inline bool swapOneInRoute(Vehicle& vehicle);
+    inline bool swapInRoute(Vehicle& vehicle);
     inline bool shiftNInRoute(Vehicle& vehicle, const int nElem);
-    inline bool swapBetweenRoutes();
+    inline bool swapBetweenRoutes(Vehicle& v1, Vehicle& v2);
+    inline bool dragAndDrop(Vehicle& v1, Vehicle& v2);
+    inline bool twoOptSwap(Vehicle& vehicle);
+    inline void twoOpt(std::vector<int>& newRoute, const std::vector<int>& route, const int i, const int j);
     
     // Constants
     const std::vector< std::vector<float> >& adjMatrix_;
     const std::vector<int>& demands_;
-    const unsigned nVehicles_;
-    const unsigned capacity_;
+    const int nVehicles_;
+    const int capacity_;
     
     // Variables
     std::vector< Vehicle > vehicles_;
