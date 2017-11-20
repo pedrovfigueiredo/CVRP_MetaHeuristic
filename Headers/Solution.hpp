@@ -29,6 +29,8 @@ public:
     
     int getCost();
     void printRoutes();
+    
+    void operator=(const Solution& s);
 private:
     void generateFirstSolution(RelaxationLevel level);
     

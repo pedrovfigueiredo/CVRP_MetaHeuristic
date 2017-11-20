@@ -317,6 +317,12 @@ void Solution::generateFirstSolution(RelaxationLevel level){
     this->modifiedRoutes_ = true;
 }
 
+void Solution::operator=(const Solution& s){
+    this->modifiedRoutes_ = s.modifiedRoutes_;
+    this->vehicles_ = s.vehicles_;
+    this->currCost_ = s.currCost_;
+}
+
 void Solution::printRoutes(){
     int i = 0;
     for (auto vehicle : this->vehicles_){

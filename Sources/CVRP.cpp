@@ -18,7 +18,7 @@ CVRP::CVRP(const std::string& filePath){
     // Building adjMatrix
     this->buildAdjMatrix(nodes);
     
-    s = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::Total);
+    s = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::None);
     
     std::cout << "Custo: " << s->getCost() << std::endl;
     s->printRoutes();
@@ -53,21 +53,20 @@ Solution* CVRP::VNS(Solution* s, std::size_t executionCount){
 }
 */
 Solution* CVRP::VND(Solution* solution){
-    Solution* newSolution = solution;
+    Solution newSolution = solution;
     int k = 1;
     while (k <= 2) {
         switch (k) {
             case 1:
-                newSolution->descida1opt();
+                newSolution.descida1opt();
                 break;
             case 2:
-                newSolution->descida2opt();
+                newSolution.descida2opt();
                 break;
         }
         
-        if (newSolution->getCost() < solution->getCost()) {
-            delete solution;
-            solution = newSolution;
+        if (newSolution.getCost() < solution->getCost()) {
+            *solution = newSolution;
             k = 1;
         }else
             k += 1;
