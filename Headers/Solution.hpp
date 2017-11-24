@@ -37,11 +37,7 @@ private:
     
     // Neighborhood Moviments
     inline bool swapInRoute(Vehicle& vehicle);
-    inline bool shiftNInRoute(Vehicle& vehicle, const int nElem);
     inline bool swapBetweenRoutes(Vehicle& v1, Vehicle& v2);
-    inline bool dragAndDrop(Vehicle& v1, Vehicle& v2);
-    inline bool twoOptSwap(Vehicle& vehicle);
-    inline void twoOpt(std::vector<int>& newRoute, const std::vector<int>& route, const int i, const int j);
     
     // Constants
     const std::vector< std::vector<float> >& adjMatrix_;

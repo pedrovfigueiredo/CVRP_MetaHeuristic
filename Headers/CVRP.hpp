@@ -22,8 +22,6 @@ public:
     CVRP(const std::string& filePath);
     ~CVRP();
     
-    //Solution* VNS();
-    
 private:
     void buildNodes(const std::string& filePath, std::vector<Node*>& nodes);
     void buildAdjMatrix(const std::vector<Node*>& nodes);

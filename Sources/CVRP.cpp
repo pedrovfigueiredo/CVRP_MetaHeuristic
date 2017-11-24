@@ -31,27 +31,7 @@ CVRP::CVRP(const std::string& filePath){
 }
 
 CVRP::~CVRP(){}
-/*
-Solution* CVRP::VNS(Solution* s, std::size_t executionCount){
-    unsigned k;
-    while (executionCount--) {
-        k = 1;
-        while (k <= 10) {
-            switch (k) {
-                case 1:
-                    <#statements#>
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-    }
-    
-    
-    return bestSolution_;
-}
-*/
+
 Solution* CVRP::VND(Solution* solution){
     Solution newSolution = solution;
     int k = 1;
