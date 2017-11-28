@@ -26,6 +26,75 @@ currCost_(s1->currCost_)
 
 Solution::~Solution(){}
 
+void Solution::vizinhoQualquer(unsigned n){
+    if (n == 1){
+        unsigned r1 = rand()%this->nVehicles_;
+        
+        while (this->vehicles_[r1].route.size() == 1)
+            r1 = rand()%this->nVehicles_;
+        
+        
+        unsigned r2 = rand()%this->vehicles_[r1].route.size(), r3 = rand()%this->vehicles_[r1].route.size();
+        
+        while (r3 == r2)
+            r3 = rand()%this->vehicles_[r1].route.size();
+        
+        std::iter_swap(this->vehicles_[r1].route.begin() + r2, this->vehicles_[r1].route.begin() + r3);
+        return;
+    }
+    
+    while (n-- > 1) {
+        while (true) {
+            // 0 for swap and 1 for DD
+            unsigned swapOrDD = rand()%2;
+            
+            unsigned r1 = rand()%this->nVehicles_,r2 = rand()%this->nVehicles_;
+            
+            while (r2 == r1)
+                r2 = rand()%this->nVehicles_;
+            
+            if (swapOrDD == 1){ // DD
+                if (this->randomDragAndDrop(this->vehicles_[r1], this->vehicles_[r2]))
+                    break;
+            }else{ // Swap
+                if (this->swapRandomBetweenRoutes(this->vehicles_[r1], this->vehicles_[r2]))
+                    break;
+            }
+        }
+    }
+}
+
+inline bool Solution::randomDragAndDrop(Vehicle& v1, Vehicle& v2){
+    unsigned r1 = rand()%v1.route.size(), r2 = rand()%v2.route.size();
+    
+    const int currLoad2 = v2.getCurrLoad(this->demands_);
+    
+    // Vehicle 2 can load clients demands
+    if (currLoad2 + this->demands_[v1.route[r1]] > this->capacity_)
+        return false;
+    
+    v2.route.insert(v2.route.begin() + r2, v1.route[r1]);
+    v1.route.erase(v1.route.begin() + r1);
+    
+    return true;
+}
+
+inline bool Solution::swapRandomBetweenRoutes(Vehicle& v1, Vehicle& v2){
+    unsigned r1 = rand()%v1.route.size(), r2 = rand()%v2.route.size();
+    
+    const int currLoad1 = v1.getCurrLoad(this->demands_);
+    const int currLoad2 = v2.getCurrLoad(this->demands_);
+    
+    // Vehicles can load clients demands
+    if (currLoad1 - this->demands_[v1.route[r1]] + this->demands_[v2.route[r2]] > this->capacity_ ||
+        currLoad2 - this->demands_[v2.route[r2]] + this->demands_[v1.route[r1]] > this->capacity_)
+        return false;
+    
+    std::iter_swap(v1.route.begin() + r1, v2.route.begin() + r2);
+    
+    return true;
+}
+
 void Solution::descida1opt(){
     for (int i = 0; i < this->nVehicles_;) {
         if(!swapInRoute(this->vehicles_[i]))
@@ -153,6 +222,7 @@ bool Solution::dragAndDrop(Vehicle& v1, Vehicle& v2){
     
 }
 
+// VERIFICAR DRAG AND DROP INTEGRADO
 bool Solution::swapBetweenRoutes(Vehicle& v1, Vehicle& v2){
     
     int bestI = -1, bestJ = -1;
@@ -173,6 +243,7 @@ bool Solution::swapBetweenRoutes(Vehicle& v1, Vehicle& v2){
             std::iter_swap(v1.route.begin() + i, v2.route.begin() + j);
             
             float newBothCost = v1.getCost(adjMatrix_) + v2.getCost(adjMatrix_);
+            
             if (newBothCost < initialBothCost)
                 if (bestBothCost > newBothCost) {
                     bestBothCost = newBothCost;

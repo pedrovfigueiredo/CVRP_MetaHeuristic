@@ -27,6 +27,9 @@ public:
     void descida1opt();
     void descida2opt();
     
+    
+    void vizinhoQualquer(unsigned n);
+    
     int getCost();
     void printRoutes();
     
@@ -36,6 +39,12 @@ private:
     
     
     // Neighborhood Moviments
+    
+    // VNS
+    inline bool swapRandomBetweenRoutes(Vehicle& v1, Vehicle& v2);
+    inline bool randomDragAndDrop(Vehicle& v1, Vehicle& v2);
+    
+    // VND
     inline bool swapInRoute(Vehicle& vehicle);
     inline bool shiftNInRoute(Vehicle& vehicle, const int nElem);
     inline bool swapBetweenRoutes(Vehicle& v1, Vehicle& v2);

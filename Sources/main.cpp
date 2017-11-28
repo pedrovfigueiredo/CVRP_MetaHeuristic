@@ -11,9 +11,17 @@
 
 int main(int argc, const char * argv[]) {
     
-    const std::string filePath = "/Users/PedroFigueiredo/Google Drive/5 Período/Análise e Projeto de Algoritmos/Projeto Final/ProjetoFinal/ProjetoFinal/Instances/M/M-n200-k17.vrp";
+    const std::string filePath = "/Users/PedroFigueiredo/Google Drive/5 Período/Análise e Projeto de Algoritmos/Projeto Final/ProjetoFinal/ProjetoFinal/Instances/P/P-n70-k10.vrp";
     
     CVRP cvrp(filePath);
+    
+    std::cout << "Custo da primeira solução: " << cvrp.solution_->getCost() << std::endl << std::endl;
+    cvrp.solution_->printRoutes();
+    
+    cvrp.VNS(5000);
+    
+    std::cout << "Custo depois do VNS: " << cvrp.solution_->getCost() << std::endl << std::endl;
+    cvrp.solution_->printRoutes();
     
     return 0;
 }

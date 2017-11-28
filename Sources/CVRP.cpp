@@ -10,7 +10,6 @@
 
 CVRP::CVRP(const std::string& filePath){
     std::vector<Node*> nodes;
-    Solution* s;
     
     //Building nodes vector
     this->buildNodes(filePath, nodes);
@@ -18,38 +17,64 @@ CVRP::CVRP(const std::string& filePath){
     // Building adjMatrix
     this->buildAdjMatrix(nodes);
     
-    s = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::None);
-    
-    std::cout << "Custo: " << s->getCost() << std::endl;
-    s->printRoutes();
-    
-    s = VND(s);
-    
-    std::cout << "Custo: " << s->getCost() << std::endl;
-    s->printRoutes();
+    this->solution_ = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::None);
     
 }
 
 CVRP::~CVRP(){}
-/*
- Solution* CVRP::VNS(Solution* s, std::size_t executionCount){
-    unsigned k;
-    while (executionCount--) {
-        k = 1;
-        while (k <= 10) {
-            switch (k) {
-            case 1:
-                memes;
-                break;
+
+ Solution* CVRP::VNS(std::size_t executionCount){
+     unsigned k;
+     //const Solution sInicial = this->solution_;
+     while (executionCount--) {
+         k = 1;
+         
+         Solution bestIteractionSolution = this->solution_;
+         
+         Solution sLinha = bestIteractionSolution;
+         
+         while (k <= 10) {
+             
+             switch (k) {
+                 case 1:
+                     sLinha.vizinhoQualquer(1);
+                     break;
+                 case 2:
+                     sLinha.vizinhoQualquer(2);
+                     break;
+                 case 3:
+                     sLinha.vizinhoQualquer(3);
+                     break;
+                 case 4:
+                     sLinha.vizinhoQualquer(4);
+                     break;
+                 case 5:
+                     sLinha.vizinhoQualquer(5);
+                     break;
+                 case 6:
+                     sLinha.vizinhoQualquer(5);
+                     break;
+                 default:
+                     sLinha.vizinhoQualquer(6);
+                     break;
+             }
+    
+            VND(&sLinha);
+            if (sLinha.getCost() < bestIteractionSolution.getCost()) {
+                bestIteractionSolution = sLinha;
+                k = 1;
+            }else
+                k++;
+         }
+         
+         if (bestIteractionSolution.getCost() < this->solution_->getCost()){
+             *this->solution_ = bestIteractionSolution;
+             std::cout << "ExecutionCount: " << executionCount << " Custo: " << bestIteractionSolution.getCost() << std::endl;
+         }
+     }
+     return this->solution_;
+}
  
-            default:
-                break;
-            }
-        }
-    }
-    return bestSolution_;
- }
- */
 
 Solution* CVRP::VND(Solution* solution){
     Solution newSolution = solution;

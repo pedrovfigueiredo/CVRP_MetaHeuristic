@@ -22,7 +22,8 @@ public:
     CVRP(const std::string& filePath);
     ~CVRP();
     
-    //Solution* VNS();
+    Solution* VNS(std::size_t executionCount);
+    Solution* solution_;
     
 private:
     void buildNodes(const std::string& filePath, std::vector<Node*>& nodes);
@@ -30,6 +31,7 @@ private:
     Solution* VND(Solution* solution);
     
     inline float euclidianDistance(const Node* n1, const Node* n2);
+
     
     unsigned nVehicles_;
     unsigned capacity_;
