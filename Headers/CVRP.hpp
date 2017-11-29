@@ -22,7 +22,10 @@ public:
     CVRP(const std::string& filePath);
     ~CVRP();
     
+    void buildFirstSolution(const float alpha);
     Solution* VNS(std::size_t executionCount);
+    void operator=(const CVRP& c);
+    
     Solution* solution_;
     
 private:

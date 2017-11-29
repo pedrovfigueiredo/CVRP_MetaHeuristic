@@ -15,12 +15,8 @@
 
 class Solution{
 public:
-    // Defines how the first solution is created
-    enum RelaxationLevel{
-        None, Total
-    };
     
-    Solution(const std::vector< std::vector<float> >& adjMatrix, const std::vector<int>& demands, const unsigned nVehicles, const unsigned capacity, RelaxationLevel level);
+    Solution(const std::vector< std::vector<float> >& adjMatrix, const std::vector<int>& demands, const unsigned nVehicles, const unsigned capacity, const float alpha);
     Solution(const Solution* s1);
     ~Solution();
     
@@ -35,7 +31,7 @@ public:
     
     void operator=(const Solution& s);
 private:
-    void generateFirstSolution(RelaxationLevel level);
+    void generateFirstSolution(const float alpha);
     
     
     // Neighborhood Moviments

@@ -8,9 +8,9 @@
 
 #include "../Headers/Solution.hpp"
 
-Solution::Solution(const std::vector< std::vector<float> >& adjMatrix, const std::vector<int>& demands, const unsigned nVehicles, const unsigned capacity, RelaxationLevel level):
+Solution::Solution(const std::vector< std::vector<float> >& adjMatrix, const std::vector<int>& demands, const unsigned nVehicles, const unsigned capacity, const float alpha):
 modifiedRoutes_(true), currCost_(0), adjMatrix_(adjMatrix), demands_(demands),nVehicles_(nVehicles), capacity_(capacity){
-    this->generateFirstSolution(level);
+    this->generateFirstSolution(alpha);
 }
 
 Solution::Solution(const Solution* s1):
@@ -27,6 +27,7 @@ currCost_(s1->currCost_)
 Solution::~Solution(){}
 
 void Solution::vizinhoQualquer(unsigned n){
+    srand(time(0));
     if (n == 1){
         unsigned r1 = rand()%this->nVehicles_;
         
@@ -266,28 +267,7 @@ bool Solution::swapBetweenRoutes(Vehicle& v1, Vehicle& v2){
     
     return false;
 }
-/*
- bool Solution::shiftNInRoute(Vehicle& vehicle, const int nElem){
- if (vehicle.route.size() < 2 || nElem < 1 || nElem > vehicle.route.size() - 1)
- return false;
- 
- int cost = vehicle.getCost(this->adjMatrix_);
- 
- int r1 = rand()%(vehicle.route.size() - nElem);
- 
- Vehicle vehicle_aux = vehicle;
- 
- std::rotate(vehicle_aux.route.begin(), vehicle_aux.route.begin() + nElem, vehicle_aux.route.end() - r1);
- 
- if (vehicle_aux.getCost(this->adjMatrix_) < cost){
- vehicle.route = vehicle_aux.route;
- this->modifiedRoutes_ = true;
- return true;
- }
- 
- return false;
- }
- */
+
 bool Solution::swapInRoute(Vehicle& vehicle){
     int rsize = (int) vehicle.route.size();
     if (rsize < 2)
@@ -327,7 +307,8 @@ bool Solution::swapInRoute(Vehicle& vehicle){
 }
 
 // Heurística de Construção
-void Solution::generateFirstSolution(RelaxationLevel level){
+void Solution::generateFirstSolution(const float alpha){
+    srand(time(0));
     std::vector< std::pair<int, int> > unvisitedClients;
     
     for (int i = 1; i < this->adjMatrix_[0].size(); i++)
@@ -342,45 +323,23 @@ void Solution::generateFirstSolution(RelaxationLevel level){
         unvisitedClients.erase(unvisitedClients.begin());
     }
     
-    switch (level) {
-        case Total:
-            srand(time(0));
-            for (int i = 0; i < unvisitedClients.size(); i++){
-                for(int j = 0; j < this->adjMatrix_.size(); j++) {
-                    int vehicle = (rand()%this->nVehicles_);
-                    int client = (rand()%(this->vehicles_[vehicle].route.size()));
-                    if (this->vehicles_[vehicle].getCurrLoad(this->demands_) + this->demands_[unvisitedClients[i].first] <= this->capacity_) {
-                        this->vehicles_[vehicle].route.insert(this->vehicles_[vehicle].route.begin() + client + 1, unvisitedClients[i].first);
-                        break;
-                    }
-                }
-            }
-            break;
-            
-        case None:
-            
-            for (int i = 0; i < unvisitedClients.size(); i++){
-                int bestVehicleIndex = -1, bestClientIndex = -1;
-                float minDistance = std::numeric_limits<float>::max();
-                
-                // Descobre qual o cliente já visitado mais próximo que cabe no veículo
-                for(int j = 0; j < this->vehicles_.size(); j++){
-                    for (int k = 0; k < this->vehicles_[j].route.size(); k++){
-                        if (adjMatrix_[i][this->vehicles_[j].route[k]] < minDistance && vehicles_[j].getCurrLoad(this->demands_) + this->demands_[unvisitedClients[i].first] <= this->capacity_) {
-                            minDistance = adjMatrix_[i][this->vehicles_[j].route[k]];
-                            bestVehicleIndex = j;
-                            bestClientIndex = k;
-                        }
-                    }
-                }
-                
-                // Atualiza rota escolhida
-                this->vehicles_[bestVehicleIndex].route.insert(this->vehicles_[bestVehicleIndex].route.begin() + bestClientIndex + 1, unvisitedClients[i].first);
-            }
-            break;
-        default:
-            std::cerr << "Opção de relaxação inválida." << std::endl;
-            break;
+    for (int i = 0; i < unvisitedClients.size(); i++){
+        std::vector< std::pair< std::pair<int, int> , float> > visitedClients;
+        
+        // Adds only clients which have been visited and do not surpass vehicle capacity
+        for(int j = 0; j < this->vehicles_.size(); j++)
+            for (int k = 0; k < this->vehicles_[j].route.size(); k++)
+                if (vehicles_[j].getCurrLoad(this->demands_) + unvisitedClients[i].second <= this->capacity_)
+                    visitedClients.push_back({{j,k},adjMatrix_[i][this->vehicles_[j].route[k]]});
+        
+        // Sorts according to distance
+        std::sort(visitedClients.begin(), visitedClients.end(), [](const auto a1, const auto a2){return a1.second < a2.second;});
+        
+        unsigned int nPossibleCandidates = (visitedClients.size() * alpha) < 1 ? 1 : visitedClients.size() * alpha;
+        unsigned int r1 = rand()%nPossibleCandidates;
+        
+        unsigned int vehicleIndex = visitedClients[r1].first.first, clientIndex = visitedClients[r1].first.second;
+        this->vehicles_[vehicleIndex].route.insert(this->vehicles_[vehicleIndex].route.begin() + clientIndex + 1, unvisitedClients[i].first);
     }
     
     this->modifiedRoutes_ = true;

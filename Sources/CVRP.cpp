@@ -16,16 +16,24 @@ CVRP::CVRP(const std::string& filePath){
     
     // Building adjMatrix
     this->buildAdjMatrix(nodes);
-    
-    this->solution_ = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, Solution::RelaxationLevel::None);
-    
 }
 
 CVRP::~CVRP(){}
 
+void CVRP::operator=(const CVRP& c){
+    this->adjMatrix_ = c.adjMatrix_;
+    this->capacity_ = c.capacity_;
+    this->demands_ = c.demands_;
+    this->nVehicles_ = c.nVehicles_;
+    this->solution_ = c.solution_;
+}
+
+void CVRP::buildFirstSolution(const float alpha){
+    this->solution_ = new Solution(this->adjMatrix_, this->demands_, this->nVehicles_, this->capacity_, alpha);
+}
+
  Solution* CVRP::VNS(std::size_t executionCount){
      unsigned k;
-     //const Solution sInicial = this->solution_;
      while (executionCount--) {
          k = 1;
          
@@ -67,10 +75,9 @@ CVRP::~CVRP(){}
                 k++;
          }
          
-         if (bestIteractionSolution.getCost() < this->solution_->getCost()){
+         if (bestIteractionSolution.getCost() < this->solution_->getCost())
              *this->solution_ = bestIteractionSolution;
-             std::cout << "ExecutionCount: " << executionCount << " Custo: " << bestIteractionSolution.getCost() << std::endl;
-         }
+         
      }
      return this->solution_;
 }
